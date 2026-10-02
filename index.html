@@ -861,7 +861,7 @@ const FAIL={
 };
 const money=n=>n===0?'$0':'$'+n.toFixed(2);
 class Component extends DCLogic {
-  state={screen:'landing',authUser:false,credits:null,authMode:'login',authEmail:'',authPassword:'',authConfirm:'',authName:'',authBusy:false,authError:null,authMessage:null,used:8,person:null,garment:null,gTab:'upload',urlText:'',urlLoading:false,pErr:null,gErr:null,dragP:false,dragG:false,results:null,filter:'all',view:'compare',split:50,menuOpen:false,acctOpen:false,modal:null,pack:'creator',paying:false,toasts:[],w:1200,failKind:null,attempt:0,confirm:null,currentId:null,priv:{autoDelete:true,training:false}};
+  state={screen:'landing',authUser:false,pendingPlan:null,credits:null,authMode:'login',authEmail:'',authPassword:'',authConfirm:'',authName:'',authBusy:false,authError:null,authMessage:null,used:8,person:null,garment:null,gTab:'upload',urlText:'',urlLoading:false,pErr:null,gErr:null,dragP:false,dragG:false,results:null,filter:'all',view:'compare',split:50,menuOpen:false,acctOpen:false,modal:null,pack:'creator',paying:false,toasts:[],w:1200,failKind:null,attempt:0,confirm:null,currentId:null,priv:{autoDelete:true,training:false}};
   rootRef=React.createRef(); howRef=React.createRef(); pIn=React.createRef(); gIn=React.createRef();
   componentDidMount(){
     const el=this.rootRef.current; if(el&&window.ResizeObserver){this.ro=new ResizeObserver(e=>{const w=e[0].contentRect.width; if(Math.abs(w-this.state.w)>1)this.setState({w});}); this.ro.observe(el);}
@@ -904,7 +904,7 @@ class Component extends DCLogic {
     try{
       const data=await window.DrapeSupabase.signUp(email,password,name);
       if(data.session){
-        this.setState({authBusy:false,authUser:true,screen:'landing',credits:3,authMessage:null});
+        this.setState({authBusy:false,authUser:true,screen:'landing',credits:3,authMessage:null},()=>{if(this.state.pendingPlan){const plan=this.state.pendingPlan;this.setState({pendingPlan:null,modal:'buy',pack:plan});}});
       }else{
         this.setState({authBusy:false,authMessage:'Account created. Check your email to confirm your account, then log in.',authPassword:'',authConfirm:''});
       }
@@ -925,6 +925,14 @@ class Component extends DCLogic {
   }
   onAuthKey=e=>{if(e.key==='Enter'){if(this.state.authMode==='login')this.submitLogin();else if(this.state.authMode==='signup')this.submitSignup();else this.submitReset();}};
 
+  selectPlan(planKey){
+    if(this.state.authUser){
+      this.setState({modal:'buy',pack:planKey});
+    }else{
+      this.setState({authMode:'signup',authError:null,authMessage:null,authPassword:'',authConfirm:'',screen:'auth',pendingPlan:planKey});
+    }
+    try{window.scrollTo(0,0);}catch(e){}
+  }
   async signOut(){
     try{await window.DrapeSupabase.signOut();}catch(e){}
     this.setState({authUser:false,screen:'landing',credits:null,authEmail:'',authName:'',acctOpen:false,menuOpen:false});
@@ -986,7 +994,7 @@ class Component extends DCLogic {
     const plans=PLANS.map(pl=>({...pl,priceLabel:money(pl.price),perTry:pl.price===0?'free':'$'+(pl.price/pl.credits).toFixed(2)+' per try',featured:pl.key===featured,badge:featured==='pro'?'Best value':'Most popular',isFree:pl.price===0,
       btnClass:pl.key===featured?'btn btn-primary':'btn btn-secondary',creditsBtn:pl.price===0?'Included on sign-up':'Buy Credits',planBtn:pl.price===0?'Start free':'Choose '+pl.name,
       features:[pl.credits+' credits',pl.credits+' virtual try-ons',pl.hist,pl.dl,pl.prio?'Priority processing':'Standard processing'],
-      onBuy:()=>this.setState({modal:'buy',pack:pl.key}),onPlan:()=>pl.price===0?this.go('workspace'):this.setState({modal:'buy',pack:pl.key})}));
+      onBuy:()=>pl.price===0?this.go('workspace'):this.selectPlan(pl.key),onPlan:()=>pl.price===0?this.go('workspace'):this.selectPlan(pl.key)}));
     const sel=PLANS.find(x=>x.key===s.pack)||PLANS[2];
     let visible=results; if(s.filter==='recent')visible=results.filter(r=>r.days<=7); if(s.filter==='saved')visible=results.filter(r=>r.saved);
     const cur=results.find(r=>r.id===s.currentId);
