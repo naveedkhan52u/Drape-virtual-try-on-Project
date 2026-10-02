@@ -51,30 +51,37 @@ a{color:var(--color-accent-700)}a:hover{color:var(--color-accent-800)}
         </sc-for>
       </div>
     </sc-if>
-    <button class="btn btn-secondary" onClick="{{goCredits}}" title="Credit balance" style="gap:8px;font-family:var(--font-body);font-weight:500">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"></circle><path d="M18.09 10.37A6 6 0 1 1 10.34 18"></path><path d="M7 6h1v4"></path><path d="m16.71 13.88.7.71-2.82 2.82"></path></svg>
-      <span>{{credits}}</span>
-    </button>
+    <sc-if value="{{authUser}}" hint-placeholder-val="{{false}}">
+      <button class="btn btn-secondary" onClick="{{goCredits}}" title="Credit balance" style="gap:8px;font-family:var(--font-body);font-weight:500">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"></circle><path d="M18.09 10.37A6 6 0 1 1 10.34 18"></path><path d="M7 6h1v4"></path><path d="M16.71 13.88l.7.71-2.82 2.82"></path></svg>
+        <span>{{credits}}</span>
+      </button>
+    </sc-if>
     <sc-if value="{{isDesktop}}" hint-placeholder-val="{{true}}">
       <button class="btn btn-primary blueprint" onClick="{{goWorkspace}}" style="padding:8px 18px;font-size:15px">Try On<i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i></button>
-      <div style="position:relative">
-        <button class="btn btn-ghost" onClick="{{toggleAcct}}" aria-label="Account menu" style="gap:6px;padding:2px;color:var(--color-text)">
-          <span style="width:32px;height:32px;border-radius:50%;background:var(--color-accent-200);color:var(--color-accent-900);display:grid;place-items:center;font-family:var(--font-body);font-size:12px;font-weight:700">MR</span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
-        </button>
-        <sc-if value="{{acctOpen}}" hint-placeholder-val="{{false}}">
-          <div class="blueprint elev-md" style="position:absolute;right:0;top:calc(100% + 10px);width:230px;background:var(--color-bg);padding:6px;display:flex;flex-direction:column;z-index:50">
-            <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
-            <div style="padding:10px 10px 12px;border-bottom:1px solid var(--color-divider);margin-bottom:4px">
-              <div style="font-weight:700;font-size:14px">Maya Reyes</div>
-              <div class="text-muted" style="font-size:12px">maya.reyes@gmail.com</div>
+      <sc-if value="{{authUser}}" hint-placeholder-val="{{false}}">
+        <div style="position:relative">
+          <button class="btn btn-ghost" onClick="{{toggleAcct}}" aria-label="Account menu" style="gap:6px;padding:2px;color:var(--color-text)">
+            <span style="width:32px;height:32px;border-radius:50%;background:var(--color-accent-200);color:var(--color-accent-900);display:grid;place-items:center;font-family:var(--font-body);font-size:12px;font-weight:700">DR</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
+          </button>
+          <sc-if value="{{acctOpen}}" hint-placeholder-val="{{false}}">
+            <div class="blueprint elev-md" style="position:absolute;right:0;top:calc(100% + 10px);width:230px;background:var(--color-bg);padding:6px;display:flex;flex-direction:column;z-index:50">
+              <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+              <div style="padding:10px 10px 12px;border-bottom:1px solid var(--color-divider);margin-bottom:4px">
+                <div style="font-weight:700;font-size:14px">{{authName||'Drape User'}}</div>
+                <div class="text-muted" style="font-size:12px">{{authEmail}}</div>
+              </div>
+              <sc-for list="{{acctItems}}" as="m" hint-placeholder-count="5">
+                <button class="btn btn-ghost" onClick="{{m.onClick}}" style="justify-content:flex-start;color:var(--color-text);font-family:var(--font-body);font-weight:400;padding:8px 10px">{{m.label}}</button>
+              </sc-for>
             </div>
-            <sc-for list="{{acctItems}}" as="m" hint-placeholder-count="5">
-              <button class="btn btn-ghost" onClick="{{m.onClick}}" style="justify-content:flex-start;color:var(--color-text);font-family:var(--font-body);font-weight:400;padding:8px 10px">{{m.label}}</button>
-            </sc-for>
-          </div>
-        </sc-if>
-      </div>
+          </sc-if>
+        </div>
+      </sc-if>
+      <sc-if value="{{authUser}}" hint-placeholder-val="{{false}}">
+        <button class="btn btn-secondary" onClick="{{showLogin}}" style="padding:8px 16px;font-size:14px">Sign In</button>
+      </sc-if>
     </sc-if>
     <sc-if value="{{isMobile}}" hint-placeholder-val="{{false}}">
       <button class="btn btn-secondary btn-icon" onClick="{{toggleMenu}}" aria-label="Menu">
@@ -857,7 +864,7 @@ const FAIL={
 };
 const money=n=>n===0?'$0':'$'+n.toFixed(2);
 class Component extends DCLogic {
-  state={screen:'auth',credits:null,authMode:'login',authEmail:'',authPassword:'',authConfirm:'',authName:'',authBusy:false,authError:null,authMessage:null,used:8,person:null,garment:null,gTab:'upload',urlText:'',urlLoading:false,pErr:null,gErr:null,dragP:false,dragG:false,results:null,filter:'all',view:'compare',split:50,menuOpen:false,acctOpen:false,modal:null,pack:'creator',paying:false,toasts:[],w:1200,failKind:null,attempt:0,confirm:null,currentId:null,priv:{autoDelete:true,training:false}};
+  state={screen:'landing',authUser:false,credits:null,authMode:'login',authEmail:'',authPassword:'',authConfirm:'',authName:'',authBusy:false,authError:null,authMessage:null,used:8,person:null,garment:null,gTab:'upload',urlText:'',urlLoading:false,pErr:null,gErr:null,dragP:false,dragG:false,results:null,filter:'all',view:'compare',split:50,menuOpen:false,acctOpen:false,modal:null,pack:'creator',paying:false,toasts:[],w:1200,failKind:null,attempt:0,confirm:null,currentId:null,priv:{autoDelete:true,training:false}};
   rootRef=React.createRef(); howRef=React.createRef(); pIn=React.createRef(); gIn=React.createRef();
   componentDidMount(){
     const el=this.rootRef.current; if(el&&window.ResizeObserver){this.ro=new ResizeObserver(e=>{const w=e[0].contentRect.width; if(Math.abs(w-this.state.w)>1)this.setState({w});}); this.ro.observe(el);}
@@ -870,7 +877,7 @@ class Component extends DCLogic {
       const user=await window.DrapeSupabase.getUser();
       if(user){
         const profile=await window.DrapeSupabase.getProfile().catch(()=>null);
-        this.setState({screen:'landing',credits:profile&&typeof profile.credits==='number'?profile.credits:this.state.credits,authEmail:user.email||'',authName:profile&&profile.full_name?profile.full_name:(user.user_metadata&&user.user_metadata.full_name)||''});
+        this.setState({screen:'landing',authUser:true,credits:profile&&typeof profile.credits==='number'?profile.credits:this.state.credits,authEmail:user.email||'',authName:profile&&profile.full_name?profile.full_name:(user.user_metadata&&user.user_metadata.full_name)||''});
       }
     }catch(e){/* Keep the auth screen visible when no valid session exists. */}
   }
@@ -885,7 +892,7 @@ class Component extends DCLogic {
     try{
       const data=await window.DrapeSupabase.signIn(email,password);
       const profile=await window.DrapeSupabase.getProfile().catch(()=>null);
-      this.setState({authBusy:false,screen:'landing',credits:profile&&typeof profile.credits==='number'?profile.credits:this.state.credits,authName:profile&&profile.full_name?profile.full_name:''});
+      this.setState({authBusy:false,authUser:true,screen:'landing',credits:profile&&typeof profile.credits==='number'?profile.credits:this.state.credits,authName:profile&&profile.full_name?profile.full_name:''});
     }catch(e){
       this.setState({authBusy:false,authError:e&&e.message?e.message:'Unable to log in. Please check your details.'});
     }
@@ -900,7 +907,7 @@ class Component extends DCLogic {
     try{
       const data=await window.DrapeSupabase.signUp(email,password,name);
       if(data.session){
-        this.setState({authBusy:false,screen:'landing',credits:3,authMessage:null});
+        this.setState({authBusy:false,authUser:true,screen:'landing',credits:3,authMessage:null});
       }else{
         this.setState({authBusy:false,authMessage:'Account created. Check your email to confirm your account, then log in.',authPassword:'',authConfirm:''});
       }
@@ -921,6 +928,10 @@ class Component extends DCLogic {
   }
   onAuthKey=e=>{if(e.key==='Enter'){if(this.state.authMode==='login')this.submitLogin();else if(this.state.authMode==='signup')this.submitSignup();else this.submitReset();}};
 
+  async signOut(){
+    try{await window.DrapeSupabase.signOut();}catch(e){}
+    this.setState({authUser:false,screen:'landing',credits:null,authEmail:'',authName:'',acctOpen:false,menuOpen:false});
+  }
   componentWillUnmount(){this.ro&&this.ro.disconnect();document.removeEventListener('click',this.onDoc);clearTimeout(this.t);}
   get credits(){return this.state.credits??(this.props.startingCredits??12);}
   get results(){return this.state.results??(this.props.emptyHistory?[]:SEED);}
@@ -972,7 +983,7 @@ class Component extends DCLogic {
     const goHow=e=>{pv(e);this.go('landing');setTimeout(()=>{const el=this.howRef.current;if(el)window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY-70,behavior:'smooth'});},60);};
     const screens=['landing','workspace','processing','failed','result','results','credits','pricing','account','states','auth'];
     const is={};screens.forEach(k=>is[k]=s.screen===k);
-    const navItems=[['Try On','workspace'],['My Results','results'],['Credits','credits'],['Pricing','pricing'],['How It Works','how']].map(([label,k])=>({label,current:(k===s.screen||(k==='workspace'&&['processing','result','failed'].includes(s.screen)))?'page':undefined,onClick:k==='how'?goHow:nav(k)}));
+    const navItems=[['Try On','workspace'],...(s.authUser?[['My Results','results'],['Credits','credits']]:[]),['Pricing','pricing'],['How It Works','how']].map(([label,k])=>({label,current:(k===s.screen||(k==='workspace'&&['processing','result','failed'].includes(s.screen)))?'page':undefined,onClick:k==='how'?goHow:nav(k)}));
     const p=s.person,g=s.garment;
     const featured=this.props.featuredPlan??'creator';
     const plans=PLANS.map(pl=>({...pl,priceLabel:money(pl.price),perTry:pl.price===0?'free':'$'+(pl.price/pl.credits).toFixed(2)+' per try',featured:pl.key===featured,badge:featured==='pro'?'Best value':'Most popular',isFree:pl.price===0,
@@ -1013,13 +1024,13 @@ class Component extends DCLogic {
       onAuthEmail:e=>this.setState({authEmail:e.target.value,authError:null}),onAuthPassword:e=>this.setState({authPassword:e.target.value,authError:null}),onAuthConfirm:e=>this.setState({authConfirm:e.target.value,authError:null}),onAuthName:e=>this.setState({authName:e.target.value,authError:null}),
       submitLogin:()=>this.submitLogin(),submitSignup:()=>this.submitSignup(),submitReset:()=>this.submitReset(),onAuthKey:this.onAuthKey,
       
-      isMobile,isDesktop:!isMobile,mobileMenuOpen:isMobile&&s.menuOpen,acctOpen:s.acctOpen,is,navItems,credits,used:s.used,creditsLabel,
+      isMobile,isDesktop:!isMobile,mobileMenuOpen:isMobile&&s.menuOpen,acctOpen:s.acctOpen,is,navItems,authUser:s.authUser,credits,used:s.used,creditsLabel,
       showFooter:!['processing'].includes(s.screen)&&s.screen!=='auth',
-      appChromeDisplay:s.screen==='auth'?'none':'block',
-      goLanding:nav('landing'),goWorkspace:nav('workspace'),goCredits:nav('credits'),goPricing:nav('pricing'),goResults:nav('results'),goAccount:nav('account'),goStates:nav('states'),goHow,
+      appChromeDisplay:'block',
+      goLanding:nav('landing'),goWorkspace:s.authUser?nav('workspace'):(()=>this.showAuthMode('login')),goCredits:nav('credits'),goPricing:nav('pricing'),goResults:nav('results'),goAccount:nav('account'),goStates:nav('states'),goHow,
       goSaved:()=>this.go('results',{filter:'saved'}),
       toggleMenu:()=>this.setState({menuOpen:!s.menuOpen}),toggleAcct:()=>this.setState({acctOpen:!s.acctOpen}),
-      acctItems:[['Account','account'],['My Results','results'],['Credits & billing','credits'],['UI states','states'],['Sign out','landing']].map(([label,k])=>({label,onClick:()=>{this.go(k);if(label==='Sign out')this.toast('Signed out (prototype)');}})),
+      acctItems:[['Account','account'],['My Results','results'],['Credits & billing','credits'],['Sign out','landing']].map(([label,k])=>({label,onClick:()=>label==='Sign out'?this.signOut():this.go(k)})),
       steps:[{n:'01',title:'Upload your photo',body:'A clear, front-facing photo in good light. JPG, PNG or WEBP.'},{n:'02',title:'Add a clothing item',body:'Upload a product image or paste its link from any store.'},{n:'03',title:'See it on you',body:'Get a realistic preview in seconds. Download it, save it, or try another.'}],
       // workspace
       noPerson:!p,hasPerson:!!p,pSample:p&&p.kind==='sample',pUpload:p&&p.kind!=='sample',pSrc:p&&p.src,pSrcBg:p&&p.src?`url("${p.src}")`:'none',pName:p&&p.name,
