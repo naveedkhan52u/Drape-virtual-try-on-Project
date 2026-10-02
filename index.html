@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js"></script>\n<script src="./supabase-client.js"></script>
+<script src="./support.js"></script>
+<script src="./supabase-client.js"></script>
 </head>
 <body>
 <x-dc>
@@ -19,11 +20,26 @@ a{color:var(--color-accent-700)}a:hover{color:var(--color-accent-800)}
 @keyframes dvindet{0%{left:-35%}100%{left:100%}}
 @keyframes dvtoast{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 </style>
+.auth-shell{min-height:calc(100vh - 1px);display:grid;place-items:center;padding:clamp(28px,6vw,72px) 16px;background:var(--color-bg)}
+.auth-card{width:min(440px,100%);background:var(--color-bg);border:1px solid var(--color-divider);padding:clamp(24px,5vw,40px);position:relative;box-shadow:var(--shadow-lg)}
+.auth-logo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:28px;font-family:var(--font-heading);font-weight:600;font-size:24px;letter-spacing:.05em;text-transform:uppercase}
+.auth-mark{width:32px;height:32px;display:grid;place-items:center;border:1px solid var(--color-divider);color:var(--color-accent-700);font-size:17px;position:relative}
+.auth-card h1{text-align:center;font-size:clamp(34px,8vw,48px);text-transform:uppercase;margin:0 0 8px}
+.auth-subtitle{text-align:center;color:color-mix(in srgb,var(--color-text) 62%,transparent);font-size:14px;margin:0 0 26px}
+.auth-form{display:flex;flex-direction:column;gap:16px}
+.auth-form .field{display:flex;flex-direction:column}
+.auth-form .input{min-height:42px;background:var(--color-surface);font-family:var(--font-body)}
+.auth-error{padding:10px 12px;background:var(--color-accent-100);border:1px solid var(--color-accent-300);color:var(--color-accent-900);font-size:13px}
+.auth-success{padding:10px 12px;background:var(--color-accent-100);border:1px solid var(--color-accent-300);color:var(--color-accent-900);font-size:13px}
+.auth-switch{text-align:center;margin:22px 0 0;font-size:13px;color:color-mix(in srgb,var(--color-text) 60%,transparent)}
+.auth-switch button{font-family:var(--font-body);font-weight:500}
+.auth-forgot{text-align:right;margin-top:-8px}
+@media(max-width:520px){.auth-shell{padding:20px 12px}.auth-card{padding:24px 20px}}
 </helmet>
 <div ref="{{rootRef}}" style="container-type:inline-size;min-height:100vh;margin:0 auto;max-width:{{frameMax}};background:var(--color-bg);position:relative;font-family:var(--font-body);color:var(--color-text)">
 
 <!-- NAV -->
-<header style="position:sticky;top:0;z-index:40;background:color-mix(in srgb, var(--color-bg) 92%, transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--color-divider)">
+<header style="display:{{appChromeDisplay}};position:sticky;top:0;z-index:40;background:color-mix(in srgb, var(--color-bg) 92%, transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--color-divider)">
   <nav class="nav" style="max-width:1240px;margin:0 auto;padding:12px clamp(16px,3cqw,32px);gap:clamp(12px,2.4cqw,28px)">
     <a href="#" onClick="{{goLanding}}" style="display:flex;align-items:center;gap:10px;margin-right:auto;font-size:inherit">
       <span class="blueprint" style="width:28px;height:28px;display:grid;place-items:center;font-family:var(--font-heading);font-weight:600;font-size:16px;color:var(--color-accent-700)">D<i class="corner tl"></i><i class="corner br"></i></span>
@@ -79,6 +95,54 @@ a{color:var(--color-accent-700)}a:hover{color:var(--color-accent-800)}
 </header>
 
 <main style="max-width:1240px;margin:0 auto;padding:0 clamp(16px,3cqw,32px)">
+
+<!-- AUTH -->
+<sc-if value="{{is.auth}}" hint-placeholder-val="{{false}}">
+  <section class="auth-shell" aria-label="Account authentication">
+    <div class="auth-card blueprint">
+      <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+      <div class="auth-logo"><span class="auth-mark">D<i class="corner tl"></i><i class="corner br"></i></span><span>DRAPE</span></div>
+      <sc-if value="{{authLogin}}" hint-placeholder-val="{{true}}">
+        <h1>Welcome back</h1>
+        <p class="auth-subtitle">Log in to continue to your virtual try-on workspace.</p>
+        <div class="auth-form">
+          <div class="field"><label for="auth-email">Email</label><input id="auth-email" class="input" type="email" autocomplete="email" placeholder="you@example.com" value="{{authEmail}}" onInput="{{onAuthEmail}}"></div>
+          <div class="field"><label for="auth-password">Password</label><input id="auth-password" class="input" type="password" autocomplete="current-password" placeholder="Your password" value="{{authPassword}}" onInput="{{onAuthPassword}}" onKeyDown="{{onAuthKey}}"></div>
+          <div class="auth-forgot"><button class="btn btn-ghost" onClick="{{showReset}}" style="font-size:13px">Forgot password?</button></div>
+          <sc-if value="{{authError}}"><div class="auth-error" role="alert">{{authError}}</div></sc-if>
+          <sc-if value="{{authMessage}}"><div class="auth-success" role="status">{{authMessage}}</div></sc-if>
+          <button class="btn btn-primary blueprint btn-block" onClick="{{submitLogin}}" disabled="{{authBusy}}" style="min-height:42px;font-size:16px">{{authBusy?'Logging in…':'Log In'}}<i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i></button>
+        </div>
+        <div class="auth-switch">Don't have an account? <button class="btn btn-ghost" onClick="{{showSignup}}" style="padding:0">Create one</button></div>
+      </sc-if>
+      <sc-if value="{{authSignup}}" hint-placeholder-val="{{false}}">
+        <h1>Create account</h1>
+        <p class="auth-subtitle">Start with 3 free credits and create your first virtual try-on.</p>
+        <div class="auth-form">
+          <div class="field"><label for="auth-name">Full name</label><input id="auth-name" class="input" type="text" autocomplete="name" placeholder="Your full name" value="{{authName}}" onInput="{{onAuthName}}"></div>
+          <div class="field"><label for="auth-email-signup">Email</label><input id="auth-email-signup" class="input" type="email" autocomplete="email" placeholder="you@example.com" value="{{authEmail}}" onInput="{{onAuthEmail}}"></div>
+          <div class="field"><label for="auth-password-signup">Password</label><input id="auth-password-signup" class="input" type="password" autocomplete="new-password" placeholder="At least 6 characters" value="{{authPassword}}" onInput="{{onAuthPassword}}"></div>
+          <div class="field"><label for="auth-confirm">Confirm password</label><input id="auth-confirm" class="input" type="password" autocomplete="new-password" placeholder="Enter password again" value="{{authConfirm}}" onInput="{{onAuthConfirm}}" onKeyDown="{{onAuthKey}}"></div>
+          <sc-if value="{{authError}}"><div class="auth-error" role="alert">{{authError}}</div></sc-if>
+          <sc-if value="{{authMessage}}"><div class="auth-success" role="status">{{authMessage}}</div></sc-if>
+          <button class="btn btn-primary blueprint btn-block" onClick="{{submitSignup}}" disabled="{{authBusy}}" style="min-height:42px;font-size:16px">{{authBusy?'Creating account…':'Create Account'}}<i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i></button>
+        </div>
+        <div class="auth-switch">Already have an account? <button class="btn btn-ghost" onClick="{{showLogin}}" style="padding:0">Log in</button></div>
+      </sc-if>
+      <sc-if value="{{authReset}}" hint-placeholder-val="{{false}}">
+        <h1>Reset password</h1>
+        <p class="auth-subtitle">Enter your email and we'll send a password reset link.</p>
+        <div class="auth-form">
+          <div class="field"><label for="auth-email-reset">Email</label><input id="auth-email-reset" class="input" type="email" autocomplete="email" placeholder="you@example.com" value="{{authEmail}}" onInput="{{onAuthEmail}}" onKeyDown="{{onAuthKey}}"></div>
+          <sc-if value="{{authError}}"><div class="auth-error" role="alert">{{authError}}</div></sc-if>
+          <sc-if value="{{authMessage}}"><div class="auth-success" role="status">{{authMessage}}</div></sc-if>
+          <button class="btn btn-primary blueprint btn-block" onClick="{{submitReset}}" disabled="{{authBusy}}" style="min-height:42px;font-size:16px">{{authBusy?'Sending…':'Send Reset Link'}}<i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i></button>
+        </div>
+        <div class="auth-switch"><button class="btn btn-ghost" onClick="{{showLogin}}" style="padding:0">← Back to Log In</button></div>
+      </sc-if>
+    </div>
+  </section>
+</sc-if>
 
 <!-- LANDING -->
 <sc-if value="{{is.landing}}" hint-placeholder-val="{{true}}">
@@ -794,13 +858,70 @@ const FAIL={
 };
 const money=n=>n===0?'$0':'$'+n.toFixed(2);
 class Component extends DCLogic {
-  state={screen:'landing',credits:null,used:8,person:null,garment:null,gTab:'upload',urlText:'',urlLoading:false,pErr:null,gErr:null,dragP:false,dragG:false,results:null,filter:'all',view:'compare',split:50,menuOpen:false,acctOpen:false,modal:null,pack:'creator',paying:false,toasts:[],w:1200,failKind:null,attempt:0,confirm:null,currentId:null,priv:{autoDelete:true,training:false}};
+  state={screen:'auth',credits:null,authMode:'login',authEmail:'',authPassword:'',authConfirm:'',authName:'',authBusy:false,authError:null,authMessage:null,used:8,person:null,garment:null,gTab:'upload',urlText:'',urlLoading:false,pErr:null,gErr:null,dragP:false,dragG:false,results:null,filter:'all',view:'compare',split:50,menuOpen:false,acctOpen:false,modal:null,pack:'creator',paying:false,toasts:[],w:1200,failKind:null,attempt:0,confirm:null,currentId:null,priv:{autoDelete:true,training:false}};
   rootRef=React.createRef(); howRef=React.createRef(); pIn=React.createRef(); gIn=React.createRef();
   componentDidMount(){
     const el=this.rootRef.current; if(el&&window.ResizeObserver){this.ro=new ResizeObserver(e=>{const w=e[0].contentRect.width; if(Math.abs(w-this.state.w)>1)this.setState({w});}); this.ro.observe(el);}
     this.onDoc=e=>{if(this.state.acctOpen&&!e.target.closest('[aria-label="Account menu"]')&&!e.target.closest('.elev-md'))this.setState({acctOpen:false});};
     document.addEventListener('click',this.onDoc);
+    this.checkAuth();
   }
+  async checkAuth(){
+    try{
+      const user=await window.DrapeSupabase.getUser();
+      if(user){
+        const profile=await window.DrapeSupabase.getProfile().catch(()=>null);
+        this.setState({screen:'landing',credits:profile&&typeof profile.credits==='number'?profile.credits:this.state.credits,authEmail:user.email||'',authName:profile&&profile.full_name?profile.full_name:(user.user_metadata&&user.user_metadata.full_name)||''});
+      }
+    }catch(e){/* Keep the auth screen visible when no valid session exists. */}
+  }
+  showAuthMode(mode){
+    this.setState({screen:'auth',authMode:mode,authError:null,authMessage:null,authPassword:'',authConfirm:''});
+    try{window.scrollTo(0,0);}catch(e){}
+  }
+  async submitLogin(){
+    const s=this.state,email=s.authEmail.trim(),password=s.authPassword;
+    if(!email||!password)return this.setState({authError:'Enter your email and password.'});
+    this.setState({authBusy:true,authError:null,authMessage:null});
+    try{
+      const data=await window.DrapeSupabase.signIn(email,password);
+      const profile=await window.DrapeSupabase.getProfile().catch(()=>null);
+      this.setState({authBusy:false,screen:'landing',credits:profile&&typeof profile.credits==='number'?profile.credits:this.state.credits,authName:profile&&profile.full_name?profile.full_name:''});
+    }catch(e){
+      this.setState({authBusy:false,authError:e&&e.message?e.message:'Unable to log in. Please check your details.'});
+    }
+  }
+  async submitSignup(){
+    const s=this.state,email=s.authEmail.trim(),name=s.authName.trim(),password=s.authPassword,confirm=s.authConfirm;
+    if(!name)return this.setState({authError:'Enter your full name.'});
+    if(!email)return this.setState({authError:'Enter your email address.'});
+    if(password.length<6)return this.setState({authError:'Password must be at least 6 characters.'});
+    if(password!==confirm)return this.setState({authError:'Passwords do not match.'});
+    this.setState({authBusy:true,authError:null,authMessage:null});
+    try{
+      const data=await window.DrapeSupabase.signUp(email,password,name);
+      if(data.session){
+        this.setState({authBusy:false,screen:'landing',credits:3,authMessage:null});
+      }else{
+        this.setState({authBusy:false,authMessage:'Account created. Check your email to confirm your account, then log in.',authPassword:'',authConfirm:''});
+      }
+    }catch(e){
+      this.setState({authBusy:false,authError:e&&e.message?e.message:'Unable to create your account. Please try again.'});
+    }
+  }
+  async submitReset(){
+    const email=this.state.authEmail.trim();
+    if(!email)return this.setState({authError:'Enter your email address.'});
+    this.setState({authBusy:true,authError:null,authMessage:null});
+    try{
+      await window.DrapeSupabase.resetPassword(email);
+      this.setState({authBusy:false,authMessage:'If an account exists for that email, a password reset link has been sent.'});
+    }catch(e){
+      this.setState({authBusy:false,authError:e&&e.message?e.message:'Unable to send the reset link.'});
+    }
+  }
+  onAuthKey=e=>{if(e.key==='Enter'){if(this.state.authMode==='login')this.submitLogin();else if(this.state.authMode==='signup')this.submitSignup();else this.submitReset();}};
+
   componentWillUnmount(){this.ro&&this.ro.disconnect();document.removeEventListener('click',this.onDoc);clearTimeout(this.t);}
   get credits(){return this.state.credits??(this.props.startingCredits??12);}
   get results(){return this.state.results??(this.props.emptyHistory?[]:SEED);}
@@ -844,12 +965,13 @@ class Component extends DCLogic {
   }
   setSaved(id){const r=this.results.find(x=>x.id===id);const nv=!r.saved;this.setState({results:this.results.map(x=>x.id===id?{...x,saved:nv}:x)});this.toast(nv?'Saved to your results':'Removed from saved');}
   askDelete(r){this.setState({confirm:{title:'Delete this result?',body:`“${r.name}” will be permanently removed. This can’t be undone, and credits aren’t refunded for deleted results.`,label:'Delete',run:()=>{this.setState({results:this.results.filter(x=>x.id!==r.id)});this.toast('Result deleted');}}});}
+  
   renderVals(){
     const s=this.state, w=s.w, isMobile=w<860, credits=this.credits, results=this.results;
     const pv=e=>{e&&e.preventDefault&&e.preventDefault();};
     const nav=(scr)=>e=>{pv(e);this.go(scr);};
     const goHow=e=>{pv(e);this.go('landing');setTimeout(()=>{const el=this.howRef.current;if(el)window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY-70,behavior:'smooth'});},60);};
-    const screens=['landing','workspace','processing','failed','result','results','credits','pricing','account','states'];
+    const screens=['landing','workspace','processing','failed','result','results','credits','pricing','account','states','auth'];
     const is={};screens.forEach(k=>is[k]=s.screen===k);
     const navItems=[['Try On','workspace'],['My Results','results'],['Credits','credits'],['Pricing','pricing'],['How It Works','how']].map(([label,k])=>({label,current:(k===s.screen||(k==='workspace'&&['processing','result','failed'].includes(s.screen)))?'page':undefined,onClick:k==='how'?goHow:nav(k)}));
     const p=s.person,g=s.garment;
@@ -887,8 +1009,14 @@ class Component extends DCLogic {
     return {
       rootRef:this.rootRef,howRef:this.howRef,personInputRef:this.pIn,garmentInputRef:this.gIn,
       frameMax:this.props.frame==='mobile'?'390px':'none',
+      authLogin:s.authMode==='login',authSignup:s.authMode==='signup',authReset:s.authMode==='reset',authEmail:s.authEmail,authPassword:s.authPassword,authConfirm:s.authConfirm,authName:s.authName,authBusy:s.authBusy,authError:s.authError,authMessage:s.authMessage,
+      showLogin:()=>this.showAuthMode('login'),showSignup:()=>this.showAuthMode('signup'),showReset:()=>this.showAuthMode('reset'),
+      onAuthEmail:e=>this.setState({authEmail:e.target.value,authError:null}),onAuthPassword:e=>this.setState({authPassword:e.target.value,authError:null}),onAuthConfirm:e=>this.setState({authConfirm:e.target.value,authError:null}),onAuthName:e=>this.setState({authName:e.target.value,authError:null}),
+      submitLogin:()=>this.submitLogin(),submitSignup:()=>this.submitSignup(),submitReset:()=>this.submitReset(),onAuthKey:this.onAuthKey,
+      
       isMobile,isDesktop:!isMobile,mobileMenuOpen:isMobile&&s.menuOpen,acctOpen:s.acctOpen,is,navItems,credits,used:s.used,creditsLabel,
-      showFooter:!['processing'].includes(s.screen),
+      showFooter:!['processing'].includes(s.screen)&&s.screen!=='auth',
+      appChromeDisplay:s.screen==='auth'?'none':'block',
       goLanding:nav('landing'),goWorkspace:nav('workspace'),goCredits:nav('credits'),goPricing:nav('pricing'),goResults:nav('results'),goAccount:nav('account'),goStates:nav('states'),goHow,
       goSaved:()=>this.go('results',{filter:'saved'}),
       toggleMenu:()=>this.setState({menuOpen:!s.menuOpen}),toggleAcct:()=>this.setState({acctOpen:!s.acctOpen}),
