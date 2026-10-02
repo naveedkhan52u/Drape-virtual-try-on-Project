@@ -71,6 +71,15 @@
       return result.data;
     },
 
+    async resetPassword(email) {
+      const supabase = await getClient();
+      const result = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + window.location.pathname
+      });
+      if (result.error) throw result.error;
+      return result.data;
+    },
+
     async signOut() {
       const supabase = await getClient();
       const result = await supabase.auth.signOut();
