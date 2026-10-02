@@ -58,9 +58,7 @@ a{color:var(--color-accent-700)}a:hover{color:var(--color-accent-800)}
       </button>
     </sc-if>
     <sc-if value="{{isDesktop}}" hint-placeholder-val="{{true}}">
-      <sc-if value="{{authUser}}" hint-placeholder-val="{{false}}">
-        <button class="btn btn-secondary" onClick="{{showLogin}}" style="padding:8px 16px;font-size:14px">Sign In</button>
-      </sc-if>
+      <button class="btn btn-primary blueprint" onClick="{{showLogin}}" style="display:{{authSignInDisplay}};padding:8px 18px;font-size:15px">Sign In<i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i></button>
       <sc-if value="{{authUser}}" hint-placeholder-val="{{false}}">
         <div style="position:relative">
           <button class="btn btn-ghost" onClick="{{toggleAcct}}" aria-label="Account menu" style="gap:6px;padding:2px;color:var(--color-text)">
@@ -1023,7 +1021,7 @@ class Component extends DCLogic {
       onAuthEmail:e=>this.setState({authEmail:e.target.value,authError:null}),onAuthPassword:e=>this.setState({authPassword:e.target.value,authError:null}),onAuthConfirm:e=>this.setState({authConfirm:e.target.value,authError:null}),onAuthName:e=>this.setState({authName:e.target.value,authError:null}),
       submitLogin:()=>this.submitLogin(),submitSignup:()=>this.submitSignup(),submitReset:()=>this.submitReset(),onAuthKey:this.onAuthKey,
       
-      isMobile,isDesktop:!isMobile,mobileMenuOpen:isMobile&&s.menuOpen,acctOpen:s.acctOpen,is,navItems,authUser:s.authUser,credits,used:s.used,creditsLabel,
+      isMobile,isDesktop:!isMobile,mobileMenuOpen:isMobile&&s.menuOpen,acctOpen:s.acctOpen,is,navItems,authUser:s.authUser,authSignInDisplay:s.authUser?'none':'inline-flex',credits,used:s.used,creditsLabel,
       showFooter:!['processing'].includes(s.screen)&&s.screen!=='auth',
       appChromeDisplay:'block',
       goLanding:nav('landing'),goWorkspace:s.authUser?nav('workspace'):(()=>this.showAuthMode('login')),goCredits:nav('credits'),goPricing:nav('pricing'),goResults:nav('results'),goAccount:nav('account'),goStates:nav('states'),goHow,
