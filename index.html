@@ -33,7 +33,7 @@ a{color:var(--color-accent-700)}a:hover{color:var(--color-accent-800)}
 .auth-switch button{font-family:var(--font-body);font-weight:500}
 .auth-forgot{text-align:right;margin-top:-8px}
 @media(max-width:520px){.auth-shell{min-height:calc(100vh - 72px);padding:40px 16px 60px}.auth-card{width:100%;max-width:380px;padding:24px 20px}}
-</style>
+ .auth-password-wrap{position:relative}.auth-password-input{width:100%;padding-right:46px;box-sizing:border-box}.auth-password-toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:var(--color-text);cursor:pointer;font-size:16px;padding:6px}</style>
 
 </helmet>
 <div ref="{{rootRef}}" style="container-type:inline-size;min-height:100vh;margin:0 auto;max-width:{{frameMax}};background:var(--color-bg);position:relative;font-family:var(--font-body);color:var(--color-text)">
@@ -111,7 +111,7 @@ a{color:var(--color-accent-700)}a:hover{color:var(--color-accent-800)}
         <p class="auth-subtitle">Log in to continue to your virtual try-on workspace.</p>
         <div class="auth-form">
           <div class="field"><label for="auth-email">Email</label><input id="auth-email" class="input" type="email" autocomplete="email" placeholder="you@example.com" value="{{authEmail}}" onInput="{{onAuthEmail}}"></div>
-          <div class="field"><label for="auth-password">Password</label><input id="auth-password" class="input" type="password" autocomplete="current-password" placeholder="Your password" value="{{authPassword}}" onInput="{{onAuthPassword}}" onKeyDown="{{onAuthKey}}"></div>
+          <div class="field"><label for="auth-password">Password</label><div class="auth-password-wrap"><input id="auth-password" class="input auth-password-input" type="{{authPasswordType}}" autocomplete="current-password" placeholder="Your password" value="{{authPassword}}" onInput="{{onAuthPassword}}" onKeyDown="{{onAuthKey}}"><button type="button" class="auth-password-toggle" onClick="{{toggleAuthPassword}}" aria-label="Show or hide password" title="Show or hide password">◉</button></div>
           <div class="auth-forgot"><button class="btn btn-ghost" onClick="{{showReset}}" style="font-size:13px">Forgot password?</button></div>
           <sc-if value="{{authError}}"><div class="auth-error" role="alert">{{authError}}</div></sc-if>
           <sc-if value="{{authMessage}}"><div class="auth-success" role="status">{{authMessage}}</div></sc-if>
@@ -125,8 +125,8 @@ a{color:var(--color-accent-700)}a:hover{color:var(--color-accent-800)}
         <div class="auth-form">
           <div class="field"><label for="auth-name">Full name</label><input id="auth-name" class="input" type="text" autocomplete="name" placeholder="Your full name" value="{{authName}}" onInput="{{onAuthName}}"></div>
           <div class="field"><label for="auth-email-signup">Email</label><input id="auth-email-signup" class="input" type="email" autocomplete="email" placeholder="you@example.com" value="{{authEmail}}" onInput="{{onAuthEmail}}"></div>
-          <div class="field"><label for="auth-password-signup">Password</label><input id="auth-password-signup" class="input" type="password" autocomplete="new-password" placeholder="At least 6 characters" value="{{authPassword}}" onInput="{{onAuthPassword}}"></div>
-          <div class="field"><label for="auth-confirm">Confirm password</label><input id="auth-confirm" class="input" type="password" autocomplete="new-password" placeholder="Enter password again" value="{{authConfirm}}" onInput="{{onAuthConfirm}}" onKeyDown="{{onAuthKey}}"></div>
+          <div class="field"><label for="auth-password-signup">Password</label><div class="auth-password-wrap"><input id="auth-password-signup" class="input auth-password-input" type="{{authPasswordType}}" autocomplete="new-password" placeholder="At least 6 characters" value="{{authPassword}}" onInput="{{onAuthPassword}}"><button type="button" class="auth-password-toggle" onClick="{{toggleAuthPassword}}" aria-label="Show or hide password" title="Show or hide password">◉</button></div>
+          <div class="field"><label for="auth-confirm">Confirm password</label><div class="auth-password-wrap"><input id="auth-confirm" class="input auth-password-input" type="{{authConfirmType}}" autocomplete="new-password" placeholder="Enter password again" value="{{authConfirm}}" onInput="{{onAuthConfirm}}" onKeyDown="{{onAuthKey}}"><button type="button" class="auth-password-toggle" onClick="{{toggleAuthConfirm}}" aria-label="Show or hide confirmation password" title="Show or hide confirmation password">◉</button></div>
           <sc-if value="{{authError}}"><div class="auth-error" role="alert">{{authError}}</div></sc-if>
           <sc-if value="{{authMessage}}"><div class="auth-success" role="status">{{authMessage}}</div></sc-if>
           <button class="btn btn-primary blueprint btn-block" onClick="{{submitSignup}}" disabled="{{authBusy}}" style="min-height:42px;font-size:16px">{{authBusy?'Creating account…':'Create Account'}}<i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i></button>
@@ -1025,7 +1025,7 @@ class Component extends DCLogic {
     return {
       rootRef:this.rootRef,howRef:this.howRef,personInputRef:this.pIn,garmentInputRef:this.gIn,
       frameMax:this.props.frame==='mobile'?'390px':'none',
-      authLogin:s.authMode==='login',authSignup:s.authMode==='signup',authReset:s.authMode==='reset',authEmail:s.authEmail,authPassword:s.authPassword,authConfirm:s.authConfirm,authName:s.authName,authBusy:s.authBusy,authError:s.authError,authMessage:s.authMessage,
+      authLogin:s.authMode==='login',authSignup:s.authMode==='signup',authReset:s.authMode==='reset',authEmail:s.authEmail,authPassword:s.authPassword,authConfirm:s.authConfirm,authName:s.authName,authBusy:s.authBusy,authError:s.authError,authMessage:s.authMessage,authPasswordVisible:!!s.authPasswordVisible,authConfirmVisible:!!s.authConfirmVisible,authPasswordType:s.authPasswordVisible?"text":"password",authConfirmType:s.authConfirmVisible?"text":"password",toggleAuthPassword:()=>this.setState({authPasswordVisible:!s.authPasswordVisible}),toggleAuthConfirm:()=>this.setState({authConfirmVisible:!s.authConfirmVisible}),
       showLogin:()=>this.showAuthMode('login'),showSignup:()=>this.showAuthMode('signup'),showReset:()=>this.showAuthMode('reset'),
       onAuthEmail:e=>this.setState({authEmail:e.target.value,authError:null}),onAuthPassword:e=>this.setState({authPassword:e.target.value,authError:null}),onAuthConfirm:e=>this.setState({authConfirm:e.target.value,authError:null}),onAuthName:e=>this.setState({authName:e.target.value,authError:null}),
       submitLogin:()=>this.submitLogin(),submitSignup:()=>this.submitSignup(),submitReset:()=>this.submitReset(),onAuthKey:this.onAuthKey,
