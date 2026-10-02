@@ -33,7 +33,7 @@ a{color:var(--color-accent-700)}a:hover{color:var(--color-accent-800)}
 .auth-switch button{font-family:var(--font-body);font-weight:500}
 .auth-forgot{text-align:right;margin-top:-8px}
 @media(max-width:520px){.auth-shell{min-height:0;height:auto;padding:40px 16px 100px}.auth-card{width:100%;max-width:380px;padding:24px 20px}}
- .auth-password-wrap{position:relative}.auth-password-input{width:100%;padding-right:46px;box-sizing:border-box}.auth-password-toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:color-mix(in srgb,var(--color-text) 58%,transparent);cursor:pointer;padding:6px;display:grid;place-items:center}.auth-password-toggle:hover{color:var(--color-text)}.auth-submit{color:var(--color-bg)!important;background:var(--color-accent-700)!important;text-shadow:none!important}.auth-submit:disabled{opacity:.7;color:var(--color-bg)!important}</style>
+ .auth-password-wrap{position:relative}.auth-password-input{width:100%;padding-right:46px;box-sizing:border-box}.auth-password-toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:color-mix(in srgb,var(--color-text) 58%,transparent);cursor:pointer;padding:6px;display:grid;place-items:center}.auth-password-toggle:hover{color:var(--color-text)}.auth-submit{color:var(--color-bg)!important;background:var(--color-accent-700)!important;text-shadow:none!important}.auth-submit:disabled{opacity:.7;color:var(--color-bg)!important}.auth-main{max-width:none!important;width:100%;padding:0!important;min-height:0!important;height:auto!important;overflow:visible!important;display:block!important}.auth-main .auth-shell{min-height:calc(100vh - 72px);height:auto!important;overflow:visible!important;display:block!important;padding:56px 20px 120px!important}.auth-main .auth-card{margin:0 auto!important;display:block!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important}.auth-main .auth-form{height:auto!important;min-height:0!important;overflow:visible!important}@media(max-width:520px){.auth-main .auth-shell{min-height:calc(100vh - 60px);padding:40px 16px 100px!important}}</style>
 
 </helmet>
 <div ref="{{rootRef}}" style="container-type:inline-size;min-height:100vh;height:auto;margin:0 auto;max-width:{{frameMax}};background:var(--color-bg);position:relative;overflow:visible;font-family:var(--font-body);color:var(--color-text)">
@@ -98,7 +98,7 @@ a{color:var(--color-accent-700)}a:hover{color:var(--color-accent-800)}
   </sc-if>
 </header>
 
-<main style="max-width:1240px;margin:0 auto;padding:0 clamp(16px,3cqw,32px)">
+<main class="auth-main" style="max-width:1240px;margin:0 auto;padding:0 clamp(16px,3cqw,32px)">
 
 <!-- AUTH -->
 <sc-if value="{{is.auth}}" hint-placeholder-val="{{false}}">
