@@ -994,7 +994,7 @@ class Component extends DCLogic {
     const plans=PLANS.map(pl=>({...pl,priceLabel:money(pl.price),perTry:pl.price===0?'free':'$'+(pl.price/pl.credits).toFixed(2)+' per try',featured:pl.key===featured,badge:featured==='pro'?'Best value':'Most popular',isFree:pl.price===0,
       btnClass:pl.key===featured?'btn btn-primary':'btn btn-secondary',creditsBtn:pl.price===0?'Included on sign-up':'Buy Credits',planBtn:pl.price===0?'Start free':'Choose '+pl.name,
       features:[pl.credits+' credits',pl.credits+' virtual try-ons',pl.hist,pl.dl,pl.prio?'Priority processing':'Standard processing'],
-      onBuy:()=>pl.price===0?this.go('workspace'):this.selectPlan(pl.key),onPlan:()=>pl.price===0?this.go('workspace'):this.selectPlan(pl.key)}));
+      onBuy:()=>pl.price===0?this.go('workspace'):this.selectPlan(pl.key),onPlan:()=>pl.price===0?(s.authUser?this.go('workspace'):this.showAuthMode('login')):this.selectPlan(pl.key)}));
     const sel=PLANS.find(x=>x.key===s.pack)||PLANS[2];
     let visible=results; if(s.filter==='recent')visible=results.filter(r=>r.days<=7); if(s.filter==='saved')visible=results.filter(r=>r.saved);
     const cur=results.find(r=>r.id===s.currentId);
@@ -1056,7 +1056,7 @@ class Component extends DCLogic {
       urlText:s.urlText,onUrlText:e=>this.setState({urlText:e.target.value,gErr:null}),onUrlKey:e=>{if(e.key==='Enter')this.loadUrl();},
       loadUrl:()=>this.loadUrl(),urlBtnLabel:s.urlLoading?'Loading…':'Load Image',urlBtnDisabled:s.urlLoading||!s.urlText.trim(),
       fillSampleUrl:()=>this.setState({urlText:'https://example-store.invalid/products/linen-shirt.jpg',gErr:null}),
-      tryOn:()=>this.tryOn(),retry:()=>this.tryOn(),tryDisabled:!ready,
+      tryOn:()=>s.authUser?this.tryOn():this.showAuthMode('login'),retry:()=>s.authUser?this.tryOn():this.showAuthMode('login'),tryDisabled:!ready,
       readyHint:ready?'1 credit per try-on':(!p?'Add your photo to continue':'Add a clothing item to continue'),
       scanEl,barEl,failTitle:fail.title,failBody:fail.body,
       // result
