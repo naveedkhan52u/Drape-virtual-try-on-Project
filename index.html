@@ -106,7 +106,7 @@ a{color:var(--color-accent-700)}a:hover{color:var(--color-accent-800)}
     <div class="auth-card blueprint">
       <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
       <div class="auth-logo"><span class="auth-mark">D<i class="corner tl"></i><i class="corner br"></i></span><span>DRAPE</span></div>
-      <sc-if value="{{authLogin}}" hint-placeholder-val="{{true}}">
+      <sc-if value="{{authLogin}}">
         <h1>Welcome back</h1>
         <p class="auth-subtitle">Log in to continue to your virtual try-on workspace.</p>
         <div class="auth-form">
@@ -119,7 +119,7 @@ a{color:var(--color-accent-700)}a:hover{color:var(--color-accent-800)}
         </div>
         <div class="auth-switch">Don't have an account? <button type="button" class="btn btn-ghost signup-open-button" onClick="{{showSignup}}" style="padding:0">Create one</button></div>
       </sc-if>
-      <sc-if value="{{authSignup}}" hint-placeholder-val="{{false}}">
+      <sc-if value="{{authSignup}}">
   <div class="signup-form-new">
     <div class="signup-heading">
       <h1>Create account</h1>
