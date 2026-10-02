@@ -117,7 +117,7 @@ a{color:var(--color-accent-700)}a:hover{color:var(--color-accent-800)}
           <sc-if value="{{authMessage}}"><div class="auth-success" role="status">{{authMessage}}</div></sc-if>
           <button class="btn btn-primary blueprint btn-block auth-submit" onClick="{{submitLogin}}" disabled="{{authBusy}}" style="min-height:42px;font-size:16px;color:var(--color-bg)!important">{{authBusy?'Logging in…':'Log In'}}<i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i></button>
         </div>
-        <div class="auth-switch">Don't have an account? <button class="btn btn-ghost" onClick="{{showSignup}}" style="padding:0">Create one</button></div>
+        <div class="auth-switch">Don't have an account? <button type="button" class="btn btn-ghost signup-open-button" onClick="{{showSignup}}" style="padding:0">Create one</button></div>
       </sc-if>
       <sc-if value="{{authSignup}}" hint-placeholder-val="{{false}}">
   <div class="signup-form-new">
@@ -125,7 +125,7 @@ a{color:var(--color-accent-700)}a:hover{color:var(--color-accent-800)}
       <h1>Create account</h1>
       <p>Start with 3 free credits and create your first virtual try-on.</p>
     </div>
-    <form class="signup-form-body" onSubmit="{{submitSignup}}">
+    <div class="signup-form-body">
       <label class="signup-field">
         <span>Full name</span>
         <input type="text" autocomplete="name" placeholder="Your full name" value="{{authName}}" onInput="{{onAuthName}}">
@@ -157,7 +157,7 @@ a{color:var(--color-accent-700)}a:hover{color:var(--color-accent-800)}
       <button type="button" class="btn btn-primary blueprint btn-block signup-submit" onClick="{{submitSignup}}" disabled="{{authBusy}}">
         {{authBusy?'Creating account…':'Create Account'}}<i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
       </button>
-    </form>
+    </div>
     <div class="signup-switch">Already have an account? <button type="button" class="btn btn-ghost" onClick="{{showLogin}}" style="padding:0">Log in</button></div>
   </div>
 </sc-if>
@@ -907,6 +907,15 @@ class Component extends DCLogic {
       }
     }catch(e){/* Keep the auth screen visible when no valid session exists. */}
   }
+  openSignupScreen(){
+    this.setState({screen:'auth',authMode:'signup',authError:null,authMessage:null,authPassword:'',authConfirm:''},()=>{
+      try{
+        window.scrollTo({top:0,left:0,behavior:'auto'});
+        document.documentElement.scrollTop=0;
+        document.body.scrollTop=0;
+      }catch(e){}
+    });
+  }
   showAuthMode(mode){
     this.setState({screen:'auth',authMode:mode,authError:null,authMessage:null,authPassword:'',authConfirm:''},()=>{try{window.scrollTo({top:0,left:0,behavior:'auto'});const el=document.querySelector('.auth-main .auth-shell');if(el)el.scrollTop=0;}catch(e){}});
   }
@@ -1053,7 +1062,7 @@ class Component extends DCLogic {
       rootRef:this.rootRef,howRef:this.howRef,personInputRef:this.pIn,garmentInputRef:this.gIn,
       frameMax:this.props.frame==='mobile'?'390px':'none',
       authLogin:s.authMode==='login',authSignup:s.authMode==='signup',authReset:s.authMode==='reset',authEmail:s.authEmail,authPassword:s.authPassword,authConfirm:s.authConfirm,authName:s.authName,authBusy:s.authBusy,authError:s.authError,authMessage:s.authMessage,authPasswordVisible:!!s.authPasswordVisible,authConfirmVisible:!!s.authConfirmVisible,authPasswordType:s.authPasswordVisible?"text":"password",authConfirmType:s.authConfirmVisible?"text":"password",toggleAuthPassword:()=>this.setState({authPasswordVisible:!s.authPasswordVisible}),toggleAuthConfirm:()=>this.setState({authConfirmVisible:!s.authConfirmVisible}),
-      showLogin:()=>this.showAuthMode('login'),showSignup:()=>this.showAuthMode('signup'),showReset:()=>this.showAuthMode('reset'),
+      showLogin:()=>this.showAuthMode('login'),showSignup:()=>this.openSignupScreen(),showReset:()=>this.showAuthMode('reset'),
       onAuthEmail:e=>this.setState({authEmail:e.target.value,authError:null}),onAuthPassword:e=>this.setState({authPassword:e.target.value,authError:null}),onAuthConfirm:e=>this.setState({authConfirm:e.target.value,authError:null}),onAuthName:e=>this.setState({authName:e.target.value,authError:null}),
       submitLogin:()=>this.submitLogin(),submitSignup:()=>this.submitSignup(),submitReset:()=>this.submitReset(),onAuthKey:this.onAuthKey,
       
