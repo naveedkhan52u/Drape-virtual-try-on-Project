@@ -58,7 +58,9 @@ a{color:var(--color-accent-700)}a:hover{color:var(--color-accent-800)}
       </button>
     </sc-if>
     <sc-if value="{{isDesktop}}" hint-placeholder-val="{{true}}">
-      <button class="btn btn-primary blueprint" onClick="{{goWorkspace}}" style="padding:8px 18px;font-size:15px">Try On<i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i></button>
+      <sc-if value="{{authUser}}" hint-placeholder-val="{{false}}">
+        <button class="btn btn-secondary" onClick="{{showLogin}}" style="padding:8px 16px;font-size:14px">Sign In</button>
+      </sc-if>
       <sc-if value="{{authUser}}" hint-placeholder-val="{{false}}">
         <div style="position:relative">
           <button class="btn btn-ghost" onClick="{{toggleAcct}}" aria-label="Account menu" style="gap:6px;padding:2px;color:var(--color-text)">
@@ -78,9 +80,6 @@ a{color:var(--color-accent-700)}a:hover{color:var(--color-accent-800)}
             </div>
           </sc-if>
         </div>
-      </sc-if>
-      <sc-if value="{{authUser}}" hint-placeholder-val="{{false}}">
-        <button class="btn btn-secondary" onClick="{{showLogin}}" style="padding:8px 16px;font-size:14px">Sign In</button>
       </sc-if>
     </sc-if>
     <sc-if value="{{isMobile}}" hint-placeholder-val="{{false}}">
@@ -983,7 +982,7 @@ class Component extends DCLogic {
     const goHow=e=>{pv(e);this.go('landing');setTimeout(()=>{const el=this.howRef.current;if(el)window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY-70,behavior:'smooth'});},60);};
     const screens=['landing','workspace','processing','failed','result','results','credits','pricing','account','states','auth'];
     const is={};screens.forEach(k=>is[k]=s.screen===k);
-    const navItems=[['Try On','workspace'],...(s.authUser?[['My Results','results'],['Credits','credits']]:[]),['Pricing','pricing'],['How It Works','how']].map(([label,k])=>({label,current:(k===s.screen||(k==='workspace'&&['processing','result','failed'].includes(s.screen)))?'page':undefined,onClick:k==='how'?goHow:nav(k)}));
+    const navItems=[['Home','landing'],...(s.authUser?[['Try On','workspace'],['My Results','results'],['Credits','credits']]:[]),['Pricing','pricing'],['How It Works','how']].map(([label,k])=>({label,current:(k===s.screen||(k==='workspace'&&['processing','result','failed'].includes(s.screen)))?'page':undefined,onClick:k==='how'?goHow:nav(k)}));
     const p=s.person,g=s.garment;
     const featured=this.props.featuredPlan??'creator';
     const plans=PLANS.map(pl=>({...pl,priceLabel:money(pl.price),perTry:pl.price===0?'free':'$'+(pl.price/pl.credits).toFixed(2)+' per try',featured:pl.key===featured,badge:featured==='pro'?'Best value':'Most popular',isFree:pl.price===0,
